@@ -155,18 +155,25 @@ public class Test
 	        channel_list.add(green);
 	        channel_list.add(red);
 	        
+	        int [] blue_wavelets = WaveletMapper.forward_transform(blue, image_xdim);
+	        int [] blue2         = WaveletMapper.inverse_transform(blue_wavelets, image_xdim);
+	        int [] pixel         = WaveletMapper.getPixel(blue2, blue2, blue2, image_xdim);
+	        original_image.setRGB(0, 0, image_xdim, image_ydim, pixel, 0, image_xdim);
+	        
+	        
 	        /*
 	        int [] half_transposed_blue  = WaveletMapper.half_transpose(blue, image_xdim);
 	        int [] half_transposed_green = WaveletMapper.half_transpose(green, image_xdim);
 	        int [] half_transposed_red   = WaveletMapper.half_transpose(red, image_xdim);
 	        int [] pixel                 = WaveletMapper.getPixel(half_transposed_blue, half_transposed_green, half_transposed_red, image_xdim);
-	        */
+	        
 	        
 	        int [] transposed_blue  = WaveletMapper.transpose(blue, image_xdim);
 	        int [] transposed_green = WaveletMapper.transpose(green, image_xdim);
 	        int [] transposed_red   = WaveletMapper.transpose(red, image_xdim);
 	        int [] pixel            = WaveletMapper.getPixel(transposed_blue, transposed_green, transposed_red, image_xdim);
 	        original_image.setRGB(0, 0, image_xdim, image_ydim, pixel, 0, image_xdim);
+	        */
 			
 			JScrollBar xscrollbar = new JScrollBar(JScrollBar.HORIZONTAL, 49, 1, 0, 98);
 			AdjustmentListener xhandler = new AdjustmentListener()
