@@ -85,8 +85,8 @@ public class Test
 			 
 			image_canvas = new ImageCanvas();
 			
-			extracted_xdim = 640;
-			extracted_ydim = 640;
+			extracted_xdim = 512;
+			extracted_ydim = 512;
 			image_canvas.setSize(extracted_xdim, extracted_ydim);
 			
 			pixel = new int[extracted_xdim * extracted_ydim];

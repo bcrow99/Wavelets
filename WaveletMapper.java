@@ -10,6 +10,9 @@ public class WaveletMapper
 		int    ydim = src.length / xdim;
 		int [] dst  = new int[src.length];
 		
+		for(int i = 0; i < src.length; i++)
+	    	dst[i] = src[i];
+		
 		int k = 0;
 		for (int i = 0; i < ydim; i++)
 		    for (int j = 0; j < xdim; j++)
