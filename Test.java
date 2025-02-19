@@ -54,23 +54,6 @@ public class Test
 			original_image = ImageIO.read(file);
 			image_xdim = original_image.getWidth();
 			image_ydim = original_image.getHeight();
-			
-			System.out.println("Xdim is " + image_xdim);
-			System.out.println("Xdim = " + image_xdim + ", ydim = " + image_ydim);
-			
-			
-			int power_of_two_xdim = 2;
-			while(power_of_two_xdim < image_xdim)
-				power_of_two_xdim *= 2;
-			
-			System.out.println("Nearest power of two xdim is " + power_of_two_xdim);
-			
-			int power_of_two_ydim = 2;
-			while(power_of_two_ydim < image_ydim)
-				power_of_two_ydim *= 2;
-			
-			System.out.println("Nearest power of two ydim is " + power_of_two_ydim);
-			System.out.println();
 		  
 			JFrame frame = new JFrame("Displaying " + filename);
 			    
@@ -85,8 +68,8 @@ public class Test
 			 
 			image_canvas = new ImageCanvas();
 			
-			extracted_xdim = 512;
-			extracted_ydim = 512;
+			extracted_xdim = 480;
+			extracted_ydim = 480;
 			image_canvas.setSize(extracted_xdim, extracted_ydim);
 			
 			pixel = new int[extracted_xdim * extracted_ydim];
@@ -124,29 +107,33 @@ public class Test
 	        channel_list.add(green);
 	        channel_list.add(red);
 	        
-	        //int [] resized_blue  = ResizeMapper.resize(blue, image_xdim, 1024, 1024);
 	        int [] blue_wavelets = WaveletMapper.forward_transform(blue, extracted_xdim);
+	      
+	        /*
+	        ArrayList histogram_list = StringMapper.getHistogram(blue_wavelets);
+	        int min_value    = (int)histogram_list.get(0);
+		    int [] histogram = (int [])histogram_list.get(1);
+		    int value_range  = (int)histogram_list.get(2);
+		    
+		    System.out.println("The minimum wavelet value is " + min_value);
+		    System.out.println("The value range is " + value_range);
+		    
+		    int [] rank_table = StringMapper.getRankTable(histogram);
+		    
+		    System.out.println("The modal value is " + (rank_table[0] + min_value));
+		    System.out.println("The number of different values is " + histogram.length);
+		    */
+		    
+	        //int [] thresholded_wavelets = WaveletMapper.threshold(blue_wavelets, 1);
+	        
+	        
+	        
+	        
 	        int [] blue2         = WaveletMapper.inverse_transform(blue_wavelets, extracted_xdim);
-	        int [] pixel         = WaveletMapper.getPixel(blue, blue, blue, extracted_xdim);
+	        int [] pixel         = WaveletMapper.getPixel(blue2, blue2, blue2, extracted_xdim);
 	        extracted_image.setRGB(0, 0, extracted_xdim, extracted_ydim, pixel, 0, extracted_xdim);
 	        
 	        
-	        /*
-	        int [] half_transposed_blue  = WaveletMapper.half_transpose(blue, image_xdim);
-	        int [] half_transposed_green = WaveletMapper.half_transpose(green, image_xdim);
-	        int [] half_transposed_red   = WaveletMapper.half_transpose(red, image_xdim);
-	        int [] pixel                 = WaveletMapper.getPixel(half_transposed_blue, half_transposed_green, half_transposed_red, image_xdim);
-	        
-	        
-	        int [] transposed_blue  = WaveletMapper.transpose(blue, image_xdim);
-	        int [] transposed_green = WaveletMapper.transpose(green, image_xdim);
-	        int [] transposed_red   = WaveletMapper.transpose(red, image_xdim);
-	        int [] pixel            = WaveletMapper.getPixel(transposed_blue, transposed_green, transposed_red, image_xdim);
-	        original_image.setRGB(0, 0, image_xdim, image_ydim, pixel, 0, image_xdim);
-	        */
-			
-			
-			
 			JPanel image_panel = new JPanel(new BorderLayout());
 			
 			image_panel.add(image_canvas, BorderLayout.CENTER);
