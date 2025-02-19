@@ -26,11 +26,12 @@ public class WaveletMapper
 		int    ydim = src.length / xdim;
 		int [] dst  = new int[src.length];
 		
-	
-		for(int i = 0; i < src.length; i++)
-	    	dst[i] = src[i];
-	    
+	    // Initialize array with source values,
+		// and then replace half of them so
+		// it's a symmetrical array.
 		
+		//for(int i = 0; i < src.length; i++)
+	    //	dst[i] = src[i];
 		int k = 0;
 		for (int i = 0; i < ydim /2; i++)
 		    for (int j = 0; j < xdim; j++)
@@ -44,13 +45,10 @@ public class WaveletMapper
 	    int ydim  = src.length / xdim;
 	    int dst[] = new int[src.length];
 	    
-	   
-	    /*
-	    for(int i = 0; i < src.length; i++)
-	    	dst[i] = src[i];
-	    */
-	    
-	    
+	    // We don't initialize them in the
+	    // other direction.
+	    //for(int i = 0; i < src.length; i++)
+	  	//   dst[i] = src[i];
 	    int k = 0;
 	    for(int i = 0; i < xdim / 2; i++)
 	        for (int j = 0; j < ydim; j++)
@@ -108,6 +106,57 @@ public class WaveletMapper
 		    src[i + k] = buffer[i];
 	}
 	
+	
+	public static int [] forward_transform(int [] src, int xdim)
+	{
+		int [] buffer = new int[src.length];
+		for(int i = 0; i < src.length; i++)
+			buffer[i] = src[i];
+		int ydim = src.length / xdim;
+		
+		int min  = xdim;
+		while(min % 2 == 0)
+			min /= 2;
+		min *= 2;
+		
+		if(min < 4)
+			min = 4;
+		for(int i = 0; i < ydim; i++)
+		{
+			int offset = i * xdim;
+			for(int j = xdim; j >= min; j /= 2)
+			{
+				daub4(buffer, offset, j);
+			}
+		}
+		
+		return buffer;
+	}
+	
+	public static int [] inverse_transform(int [] src, int xdim)
+	{
+	    int ydim = src.length / xdim;
+	    int min = xdim;
+	    while (min % 2 == 0)
+	        min /= 2;
+	    min  *= 2;
+	    if(min < 4)
+	    	min = 4;
+	    int [] buffer = new int[src.length];
+	    for(int i = 0; i < src.length; i++)
+	    	buffer[i] = src[i];
+	    for(int i = 0; i < ydim; i++)  
+	    {
+	        int offset = i * xdim;
+	        for(int j = min; j <= xdim; j *= 2)
+	        {
+	        	inverse_daub4(buffer, offset, j);
+	        }
+	    }
+	    return buffer;
+	}
+	
+	/*
 	public static int [] forward_transform(int [] src, int xdim)
 	{
 		int [] buffer = new int[src.length];
@@ -139,7 +188,7 @@ public class WaveletMapper
 		min *= 2;
 		if(min < 4)
 			min = 4;
-		for(int i = 0; i < xdim /2; i++)  
+		for(int i = 0; i <= xdim /2; i++)  
 		{
 		    int offset = i * ydim;
 		    for(int j = ydim; j >= min; j /= 2)
@@ -163,7 +212,7 @@ public class WaveletMapper
 	    int [] buffer = new int[src.length];
 	    for(int i = 0; i < src.length; i++)
 	    	buffer[i] = src[i];
-	    for(int i = 0; i < xdim / 2; i++)  
+	    for(int i = 0; i <= xdim / 2; i++)  
 	    {
 	        int offset = i * ydim;
 	        for(int j = min; j <= ydim; j *= 2)
@@ -200,6 +249,58 @@ public class WaveletMapper
 	    
 	    return dst;
 	}
+	*/
+	
+	public static int [] threshold(int [] src, int percent)
+	{
+		double decimal_percent = percent;
+		decimal_percent /= 100.;
+		
+		int [] dst = new int[src.length];
+		for(int i = 0; i < src.length; i++)
+			dst[i] = src[i];
+		
+		int max_value = 0;
+		for(int i = 0; i < dst.length / 2; i++)
+			if(Math.abs(dst[i]) > max_value)
+				max_value = Math.abs(dst[i]);
+		
+		int histogram[] = new int[max_value + 1];
+		
+		for(int i = 0; i < dst.length / 2; i++)
+		{
+			int j = Math.abs(dst[i]);
+			histogram[j]++;
+		}
+	    
+		double sum = 0;
+		int j = 0;
+		while(sum < decimal_percent)
+		{
+			double value = histogram[j];
+			value /= dst.length / 2;
+			
+			sum += value;
+			j++;
+		}
+		
+		for(int i = 0; i < dst.length / 2; i++)
+		{
+		    if(Math.abs(dst[i]) < j)	
+		        dst[i] = 0;   
+		}
+		
+		return dst;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	public static int[] getPixel(int[] blue, int[] green, int[] red, int xdim)
 	{
